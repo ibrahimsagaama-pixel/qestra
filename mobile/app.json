@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Qestra",
+    "slug": "qestra",
+    "version": "1.0.0",
+    "scheme": "qestra",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#7C3AED"
+    },
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.qestra.app" },
+    "android": {
+      "adaptiveIcon": { "foregroundImage": "./assets/icon.png", "backgroundColor": "#7C3AED" },
+      "package": "com.qestra.app"
+    },
+    "plugins": ["expo-router"]
+  }
+}
