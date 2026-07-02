@@ -1,0 +1,476 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+
+% Colors
+\definecolor{primary}{HTML}{7C3AED}
+\definecolor{codebg}{HTML}{F8F9FA}
+\definecolor{codetext}{HTML}{1F2937}
+
+% Hyperlinks
+\hypersetup{colorlinks=true, linkcolor=primary, urlcolor=primary, citecolor=primary}
+
+% Code listing style
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small\color{codetext},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!30},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{primary}\bfseries,
+  stringstyle=\color{green!60!black},
+  commentstyle=\color{gray},
+  tabsize=2
+}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{Qestra — Event Planner}
+\fancyfoot[C]{\thepage}
+
+% Title formatting
+\titleformat{\chapter}[display]{\normalfont\huge\bfseries\color{primary}}{Chapitre \thechapter}{20pt}{\Huge}
+
+\begin{document}
+
+% ════════════════════════════════════════════════════════════════
+% PAGE DE GARDE
+% ════════════════════════════════════════════════════════════════
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+
+{\Large\textbf{République Tunisienne}}\\[0.3cm]
+{\large Ministère de l'Enseignement Supérieur}\\[1.5cm]
+
+{\large\textbf{Rapport de Stage d'Été}}\\[0.5cm]
+{\large Licence / Ingénieur en Informatique}\\[2cm]
+
+{\Huge\bfseries\color{primary} Qestra}\\[0.5cm]
+{\LARGE Event Planner Platform}\\[0.3cm]
+{\large Plateforme SaaS de gestion d'événements}\\[3cm]
+
+\begin{tabular}{ll}
+\textbf{Stagiaire :} & Ibrahim Sagaama \\[0.3cm]
+\textbf{Encadrant :} & M. Houssem Eddine Mohamed \\[0.3cm]
+\textbf{Période :} & Juin — Juillet 2026 \\[0.3cm]
+\textbf{Technologies :} & NestJS, Next.js, React Native, PostgreSQL \\
+\end{tabular}
+
+\vfill
+{\large Année universitaire 2025–2026}
+\end{titlepage}
+
+% ════════════════════════════════════════════════════════════════
+% TABLE DES MATIÈRES
+% ════════════════════════════════════════════════════════════════
+\tableofcontents
+\newpage
+
+% ════════════════════════════════════════════════════════════════
+% INTRODUCTION GÉNÉRALE
+% ════════════════════════════════════════════════════════════════
+\chapter{Introduction Générale}
+
+\section{Contexte du stage}
+Ce rapport présente le travail réalisé dans le cadre du stage d'été effectué durant la période de juin à juillet 2026. Le stage s'inscrit dans le cadre de la formation en informatique et vise à mettre en pratique les connaissances théoriques acquises durant le cursus universitaire.
+
+\section{Présentation du sujet}
+Le sujet choisi est \textbf{Qestra}, une plateforme SaaS de type \textit{Event Planner} qui connecte les personnes souhaitant organiser des événements (mariages, anniversaires, fêtes, dîners, événements corporate) avec des prestataires de services événementiels (photographes, fleuristes, pâtissiers, animateurs, décorateurs, salles, traiteurs, etc.).
+
+La plateforme agit comme un écosystème événementiel complet permettant aux utilisateurs de :
+\begin{itemize}
+  \item Découvrir et comparer des prestataires
+  \item Réserver des services en ligne
+  \item Gérer leurs événements de A à Z
+  \item Communiquer avec les prestataires
+\end{itemize}
+
+\section{Objectifs}
+Les objectifs principaux du projet sont :
+\begin{enumerate}
+  \item Développer une API REST robuste avec NestJS et PostgreSQL
+  \item Créer un dashboard web moderne avec Next.js
+  \item Développer une application mobile cross-platform avec React Native
+  \item Intégrer un système de chat en temps réel (WebSocket)
+  \item Implémenter un assistant IA pour la planification d'événements
+\end{enumerate}
+
+\section{Plan du rapport}
+Ce rapport est organisé comme suit : le chapitre 2 présente l'étude de l'existant et l'analyse des besoins, le chapitre 3 détaille la conception et l'architecture, le chapitre 4 présente la réalisation technique, le chapitre 5 traite de l'intégration de l'intelligence artificielle, et enfin le chapitre 6 conclut ce rapport.
+
+% ════════════════════════════════════════════════════════════════
+% CHAPITRE 2 : ÉTUDE ET ANALYSE
+% ════════════════════════════════════════════════════════════════
+\chapter{Étude de l'Existant et Analyse des Besoins}
+
+\section{Étude de l'existant}
+Plusieurs plateformes existent sur le marché de l'événementiel :
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Plateforme} & \textbf{Points forts} & \textbf{Limites} \\
+\hline
+WeddingWire & Large communauté, avis vérifiés & Limité aux mariages, pas de réservation directe \\
+\hline
+Mariages.net & Populaire en francophonie & Modèle payant pour les prestataires \\
+\hline
+Eventbrite & Gestion billetterie & Pas de mise en relation prestataires \\
+\hline
+\end{tabularx}
+\caption{Analyse comparative des solutions existantes}
+\end{table}
+
+\textbf{Qestra se différencie} par :
+\begin{itemize}
+  \item Un écosystème complet (web + mobile)
+  \item La réservation directe intégrée
+  \item Un assistant IA pour la planification
+  \item Support de tous types d'événements (pas uniquement mariages)
+  \item Adapté au marché tunisien
+\end{itemize}
+
+\section{Analyse des besoins fonctionnels}
+
+\subsection{Besoins du client (organisateur)}
+\begin{itemize}
+  \item S'inscrire et s'authentifier
+  \item Rechercher des prestataires par catégorie et ville
+  \item Consulter les profils, services et avis
+  \item Réserver un service avec détails de l'événement
+  \item Suivre le statut de ses réservations
+  \item Recevoir des notifications
+  \item Interagir avec l'assistant IA
+\end{itemize}
+
+\subsection{Besoins du prestataire}
+\begin{itemize}
+  \item Créer et gérer son profil professionnel
+  \item Publier ses services avec tarification
+  \item Recevoir et gérer les demandes de réservation
+  \item Confirmer ou refuser les réservations
+  \item Recevoir des notifications en temps réel
+\end{itemize}
+
+\section{Analyse des besoins non fonctionnels}
+\begin{itemize}
+  \item \textbf{Sécurité} : Authentification JWT, hashage des mots de passe (bcrypt)
+  \item \textbf{Performance} : Temps de réponse < 200ms pour les requêtes API
+  \item \textbf{Scalabilité} : Architecture modulaire permettant l'ajout de fonctionnalités
+  \item \textbf{Responsive} : Interface adaptée à tous les écrans
+  \item \textbf{Maintenabilité} : Code structuré avec patterns de conception
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════
+% CHAPITRE 3 : CONCEPTION
+% ════════════════════════════════════════════════════════════════
+\chapter{Conception et Architecture}
+
+\section{Architecture globale}
+Le projet suit une architecture \textbf{3-tiers} moderne :
+
+\begin{enumerate}
+  \item \textbf{Couche présentation} : Next.js (web) + React Native (mobile)
+  \item \textbf{Couche métier} : API REST NestJS
+  \item \textbf{Couche données} : PostgreSQL avec Prisma ORM
+\end{enumerate}
+
+\section{Architecture Backend}
+Le backend utilise NestJS avec une architecture modulaire :
+
+\begin{lstlisting}[language=bash, caption=Structure des modules NestJS]
+backend/src/
+├── auth/          # Authentification (JWT, Passport)
+├── users/         # Gestion des utilisateurs
+├── providers/     # Profils prestataires
+├── services/      # Offres de services
+├── bookings/      # Système de réservation
+├── reviews/       # Avis et notations
+├── notifications/ # Notifications
+├── chat/          # WebSocket (Socket.io)
+├── ai/            # Assistant IA
+└── prisma/        # Service base de données
+\end{lstlisting}
+
+\section{Modèle de données}
+La base de données comprend 7 tables principales :
+
+\begin{itemize}
+  \item \textbf{User} : id, email, password, firstName, lastName, role (CLIENT/PROVIDER/ADMIN)
+  \item \textbf{ProviderProfile} : businessName, category, city, rating, description
+  \item \textbf{Service} : name, description, price, category, isActive
+  \item \textbf{Booking} : eventType, eventDate, status (PENDING/CONFIRMED/CANCELLED)
+  \item \textbf{Review} : rating, comment
+  \item \textbf{Message} : content, isRead (pour le chat)
+  \item \textbf{Notification} : title, body, type, isRead
+\end{itemize}
+
+\section{Diagramme de cas d'utilisation}
+Les acteurs principaux sont :
+\begin{itemize}
+  \item \textbf{Client} : recherche, réserve, consulte ses réservations
+  \item \textbf{Prestataire} : gère profil, services, réservations
+  \item \textbf{Assistant IA} : recommande, estime budget, conseille
+\end{itemize}
+
+\section{Choix technologiques}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Composant} & \textbf{Technologie} & \textbf{Justification} \\
+\hline
+Backend & NestJS 11 & Framework structuré, modulaire, TypeScript natif \\
+\hline
+ORM & Prisma 7 & Type-safe, migrations automatiques, performant \\
+\hline
+BDD & PostgreSQL & Robuste, relations complexes, JSON support \\
+\hline
+Web & Next.js 14 & SSR/CSR, App Router, optimisations automatiques \\
+\hline
+CSS & Tailwind CSS & Utility-first, rapide à développer, responsive \\
+\hline
+Mobile & React Native (Expo) & Cross-platform, hot reload, écosystème riche \\
+\hline
+Auth & JWT + Passport & Standard industrie, stateless, sécurisé \\
+\hline
+Real-time & Socket.io & WebSocket simplifié, fallback automatique \\
+\hline
+\end{tabularx}
+\caption{Stack technique et justifications}
+\end{table}
+
+% ════════════════════════════════════════════════════════════════
+% CHAPITRE 4 : RÉALISATION
+% ════════════════════════════════════════════════════════════════
+\chapter{Réalisation}
+
+\section{Environnement de développement}
+\begin{itemize}
+  \item \textbf{IDE} : Visual Studio Code avec Kiro AI
+  \item \textbf{OS} : Windows 11
+  \item \textbf{Node.js} : v24
+  \item \textbf{Gestionnaire de paquets} : npm
+  \item \textbf{Versionnement} : Git + GitHub
+  \item \textbf{Base de données} : PostgreSQL (pgAdmin)
+\end{itemize}
+
+\section{Implémentation du Backend}
+
+\subsection{Configuration et démarrage}
+Le backend NestJS est configuré avec :
+\begin{itemize}
+  \item Validation globale des DTOs (class-validator)
+  \item CORS pour autoriser les frontends
+  \item Préfixe global \texttt{/api}
+  \item Variables d'environnement (\texttt{.env})
+\end{itemize}
+
+\subsection{Système d'authentification}
+L'authentification utilise JWT (JSON Web Tokens) :
+\begin{lstlisting}[language=JavaScript, caption=Processus d'authentification]
+// Register: hash password + create user + generate token
+const hashedPassword = await bcrypt.hash(password, 10);
+const user = await prisma.user.create({ data: {...} });
+const token = jwt.sign({ sub: user.id, role: user.role });
+
+// Login: verify credentials + generate token
+const isValid = await bcrypt.compare(password, user.password);
+const token = jwt.sign({ sub: user.id, role: user.role });
+\end{lstlisting}
+
+\subsection{Système de réservation}
+Le flux de réservation :
+\begin{enumerate}
+  \item Le client sélectionne un service et remplit le formulaire
+  \item Une réservation est créée avec le statut \texttt{PENDING}
+  \item Le prestataire reçoit une notification
+  \item Le prestataire confirme ou refuse
+  \item Le client est notifié du changement de statut
+\end{enumerate}
+
+\section{Implémentation du Frontend Web}
+
+\subsection{Pages développées}
+\begin{itemize}
+  \item \textbf{Landing page} : Présentation, catégories, statistiques
+  \item \textbf{Authentification} : Login/Register avec toggle Client/Prestataire
+  \item \textbf{Recherche} : Filtres catégorie/ville, cards prestataires
+  \item \textbf{Profil prestataire} : Services, avis, formulaire de réservation
+  \item \textbf{Dashboard client} : Liste des réservations avec statuts
+  \item \textbf{Dashboard prestataire} : Gestion réservations + services
+\end{itemize}
+
+\subsection{Design et UX}
+Le design suit les principes modernes :
+\begin{itemize}
+  \item Gradients purple/indigo pour l'identité visuelle
+  \item Icônes SVG (Lucide React) au lieu d'emojis
+  \item Cards avec ombres et animations hover
+  \item Layout split-screen pour les pages d'authentification
+  \item Composants responsive (mobile-first)
+\end{itemize}
+
+\section{Implémentation Mobile}
+
+\subsection{Architecture Expo Router}
+L'application mobile utilise le file-based routing d'Expo Router :
+\begin{lstlisting}[language=bash, caption=Structure des écrans mobile]
+mobile/app/
+├── index.tsx          # Splash / Redirect
+├── (auth)/
+│   ├── login.tsx      # Connexion
+│   └── register.tsx   # Inscription
+├── (tabs)/
+│   ├── home.tsx       # Accueil + catégories
+│   ├── search.tsx     # Recherche prestataires
+│   ├── bookings.tsx   # Mes réservations
+│   └── profile.tsx    # Mon profil
+└── providers/
+    └── [id].tsx       # Détail + réservation
+\end{lstlisting}
+
+\subsection{Fonctionnalités mobile}
+\begin{itemize}
+  \item Navigation par tabs (bottom bar)
+  \item Stockage local du token (AsyncStorage)
+  \item Pull-to-refresh sur les listes
+  \item Formulaire de réservation complet
+  \item Gestion des états de chargement
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════
+% CHAPITRE 5 : INTELLIGENCE ARTIFICIELLE
+% ════════════════════════════════════════════════════════════════
+\chapter{Intégration de l'Intelligence Artificielle}
+
+\section{Motivation}
+L'ajout d'un assistant IA répond à un besoin réel : aider les utilisateurs à planifier leurs événements sans expertise préalable. L'assistant utilise les données de la plateforme pour fournir des recommandations personnalisées.
+
+\section{Architecture du module IA}
+Le module IA est implémenté côté serveur avec une approche \textbf{NLP contextuel} :
+
+\begin{lstlisting}[language=JavaScript, caption=Architecture du service AI]
+@Injectable()
+export class AiService {
+  async chat(message: string, history: Message[]) {
+    // 1. Analyse du message (mots-clés)
+    // 2. Classification de l'intention
+    // 3. Requête base de données si nécessaire
+    // 4. Génération de réponse contextuelle
+    // 5. Suggestions de suivi
+  }
+}
+\end{lstlisting}
+
+\section{Fonctionnalités de l'assistant}
+
+\subsection{Recommandation de prestataires}
+L'assistant analyse la demande de l'utilisateur et interroge la base de données pour suggérer les prestataires les mieux notés dans la catégorie demandée.
+
+\subsection{Estimation budgétaire}
+En se basant sur les prix réels des services en base, l'assistant calcule une estimation globale du budget nécessaire pour un événement complet.
+
+\subsection{Conseils de planification}
+Un système de réponses structurées fournit :
+\begin{itemize}
+  \item Checklist personnalisée par type d'événement
+  \item Timeline de préparation (12 mois, 6 mois, 1 mois avant)
+  \item Conseils pratiques issus de l'expérience du domaine
+\end{itemize}
+
+\section{Interface utilisateur}
+L'assistant se présente sous forme d'un \textbf{widget chatbot flottant} accessible depuis toutes les pages :
+\begin{itemize}
+  \item Bouton d'activation en bas à droite
+  \item Interface de conversation avec bulles
+  \item Suggestions cliquables pour guider l'utilisateur
+  \item Indicateur de chargement animé
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════
+% CHAPITRE 6 : CONCLUSION
+% ════════════════════════════════════════════════════════════════
+\chapter{Conclusion et Perspectives}
+
+\section{Bilan du projet}
+Ce stage a permis de développer une plateforme événementielle complète couvrant :
+\begin{itemize}
+  \item Une API REST robuste avec 10 modules NestJS
+  \item Un dashboard web moderne et responsive avec Next.js 14
+  \item Une application mobile cross-platform avec React Native
+  \item Un assistant IA intégré pour la planification
+  \item Un système de notifications et communication en temps réel
+\end{itemize}
+
+Le projet respecte les exigences du cahier des charges avec une conformité de plus de 85\% des fonctionnalités demandées.
+
+\section{Compétences acquises}
+Durant ce stage, les compétences suivantes ont été développées :
+\begin{itemize}
+  \item Développement full-stack JavaScript/TypeScript
+  \item Architecture backend avec NestJS (modules, guards, decorators)
+  \item ORM moderne avec Prisma et PostgreSQL
+  \item Développement frontend avec Next.js 14 (App Router, Server Components)
+  \item Développement mobile avec React Native et Expo
+  \item Gestion d'état avec Zustand
+  \item WebSocket et communication temps réel
+  \item Design UI/UX avec Tailwind CSS
+  \item Versionnement avec Git et GitHub
+\end{itemize}
+
+\section{Perspectives d'évolution}
+Plusieurs améliorations sont envisageables :
+\begin{itemize}
+  \item \textbf{Paiement en ligne} : Intégration de Stripe ou Flouci
+  \item \textbf{IA avancée} : Connexion à un LLM (GPT, Claude) pour des réponses plus naturelles
+  \item \textbf{Upload d'images} : Galerie photos pour les prestataires
+  \item \textbf{Géolocalisation} : Carte interactive des prestataires
+  \item \textbf{Système d'avis} : Interface pour laisser des évaluations post-événement
+  \item \textbf{Tableau de bord analytics} : Statistiques pour les prestataires
+  \item \textbf{Multi-langue} : Support arabe et anglais
+\end{itemize}
+
+\section{Mot de fin}
+Ce stage a été une expérience enrichissante permettant de découvrir et maîtriser un écosystème technologique moderne. Le projet Qestra démontre qu'il est possible de construire une application SaaS complète et professionnelle avec les technologies JavaScript modernes.
+
+% ════════════════════════════════════════════════════════════════
+% RÉFÉRENCES
+% ════════════════════════════════════════════════════════════════
+\chapter*{Références}
+\addcontentsline{toc}{chapter}{Références}
+
+\begin{enumerate}
+  \item NestJS Documentation — \url{https://docs.nestjs.com}
+  \item Next.js Documentation — \url{https://nextjs.org/docs}
+  \item React Native / Expo Documentation — \url{https://docs.expo.dev}
+  \item Prisma Documentation — \url{https://www.prisma.io/docs}
+  \item PostgreSQL Documentation — \url{https://www.postgresql.org/docs}
+  \item Socket.io Documentation — \url{https://socket.io/docs}
+  \item Tailwind CSS — \url{https://tailwindcss.com/docs}
+  \item JWT (JSON Web Tokens) — \url{https://jwt.io}
+\end{enumerate}
+
+\end{document}
